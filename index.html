@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 Premium Student Search Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    @keyframes gradientShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .card-glass {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 25px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      padding: 40px;
+      max-width: 950px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .floating-icon {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 100px;
+      color: rgba(0, 114, 255, 0.1);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .floating-header {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #5f2c82;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .highlight, .form-select, .form-control {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #ced4da;
+      border-radius: 12px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .neon-btn {
+      background: linear-gradient(90deg, #00dbde, #fc00ff);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      box-shadow: 0 0 15px #fc00ff, 0 0 20px #00dbde;
+      transition: 0.4s ease;
+    }
+
+    .neon-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #fc00ff, 0 0 30px #00dbde;
+    }
+
+    #loader {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #loader img {
+      width: 70px;
+    }
+
+    .table thead {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+      border-radius: 12px;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .alert {
+      border-radius: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card-glass">
+    <div class="floating-icon">
+      <i class="fas fa-graduation-cap"></i>
+    </div>
+    <h2 class="floating-header">
+      <i class="fas fa-search"></i> Student Search Portal
+    </h2>
+    
+    <form method="POST" onsubmit="showLoader()" class="row g-3">
+      <div class="col-md-4">
+        <select name="field" class="form-select highlight" required>
+          <option value="Student Name">Student Name</option>
+          <option value="Father's Name">Father's Name</option>
+          <option value="Date of Birth">Date of Birth</option>
+          <option value="Mobile Number">Mobile Number</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <input type="text" name="query" class="form-control highlight" placeholder="Enter search value..." required>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn neon-btn w-100">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </div>
+    </form>
+
+    <div id="loader">
+      <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading...">
+      <p>Processing your request...</p>
+    </div>
+
+    {% if data %}
+    <div class="mt-4">
+      <input type="text" id="searchInput" class="form-control highlight mb-3" placeholder="🔍 Filter results...">
+      <div class="d-flex justify-content-end mb-3">
+        <a href="/download" class="btn neon-btn me-2">
+          <i class="fas fa-file-excel"></i> Excel
+        </a>
+        <a href="/download-pdf" class="btn btn-danger">
+          <i class="fas fa-file-pdf"></i> PDF
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+          <thead>
+            <tr>
+              <th>Form Ref No</th>
+              <th>Student Name</th>
+              <th>Father's Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+            <tr>
+              <td>{{ row[0] }}</td>
+              <td>{{ row[1] }}</td>
+              <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center mt-4">
+      <i class="fas fa-info-circle"></i> Please enter a search query above
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function showLoader() {
+      document.getElementById("loader").style.display = "block";
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.addEventListener("keyup", function () {
+        const filter = searchInput.value.toLowerCase();
+        const rows = document.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+          const text = row.innerText.toLowerCase();
+          row.style.display = text.includes(filter) ? "" : "none";
+        });
+      });
+    }
+  </script>
+</body>
+</html>
